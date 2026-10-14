@@ -80,6 +80,10 @@
     return e;
   }
   const $ = id => document.getElementById(id);
+  // null/false 자식은 건너뛰고 붙인다 (replaceChildren에 null을 넘기면 'null' 글자가 찍힘)
+  function setChildren(el, ...kids) {
+    el.replaceChildren(...kids.flat().filter(k => k != null && k !== false));
+  }
 
   /* ===== 데이터 계산 ===== */
   function routinesFor(key) {
@@ -161,7 +165,7 @@
     ].sort(sortItems);
 
     box.className = 'card summary' + (s.total > 0 && s.pct === 100 ? ' all-done' : '');
-    box.replaceChildren(
+    setChildren(box,
       h('p', { class: 'big' }, s.done + ' / ' + s.total + ' ', h('small', { text: '완료 · 남은 일 ' + (s.total - s.done) + '개' })),
       h('div', { class: 'progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(s.pct), 'aria-label': '오늘 진행률' },
         h('div', { style: 'width:' + s.pct + '%' })),
@@ -398,7 +402,7 @@
     else if (rrows.length) insights.push(h('li', { text: '이번 주 루틴을 하나도 놓치지 않았어요! 👏' }));
 
     const box = $('weekInsights');
-    box.replaceChildren(
+    setChildren(box,
       h('p', { class: 'insight-title', text: '이번 주 요약' }),
       h('ul', { class: 'insight-list' }, insights),
       rrows.length
